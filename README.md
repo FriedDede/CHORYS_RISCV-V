@@ -22,7 +22,14 @@ Contains the riscv test executable and the crosscompile toolchain. As well as th
 ## tcl-scripts
 Start from here to build a new projects based on this design.
 
-Scripts to instantiate the HBM and XDMA subsystems to be connected to the compute platform, with a guide.
+Scripts to instantiate the HBM and DMA subsystems to be connected to the compute platform, with a guide.
 
 ## xdc
 Alveo U55c hardware constraint
+
+# HOW TO USE THIS REPO:
+- create a new vivado project for alveo u55c
+- import all the rtl files in HW and the bootrom in bootrom_u55
+- import xdc
+- run tcl/clock_gen.tcl and tcl/qdma_interface.tcl
+- implement or simulate the design
