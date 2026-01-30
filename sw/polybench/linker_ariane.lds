@@ -1,0 +1,117 @@
+/* Simple linker script for the RISC-V core implementation
+Author: Andrea Motta, Politecnico di Milano
+Revision: 28/05/2024
+
+*/
+
+OUTPUT_FORMAT("elf64-littleriscv")
+OUTPUT_ARCH(riscv)
+ENTRY(_start)
+
+entry_point 	= 0x10000;
+dram_base       = 0x80000000 + (0x1000000 * CPU);	 	
+mem_lenght		= 16M;
+mem_base 		= dram_base + entry_point;
+
+MEMORY
+{
+	reserved (awx) : ORIGIN = dram_base, LENGTH = entry_point
+    mem (awx) : ORIGIN = mem_base, LENGTH = mem_lenght
+}
+
+__stack_size = 2M;
+
+SECTIONS
+{
+	.init :
+	{
+		_text = .;
+		KEEP (*(SORT_NONE(.init)))
+	} >mem AT>mem
+	
+	.text :
+	{
+        . = ALIGN(4);
+		*(.text .text.*)
+        . = ALIGN(4);
+	} >mem AT>mem
+
+	.fini :
+	{
+		KEEP (*(SORT_NONE(.fini)))
+		_etext = .;
+	} >mem AT>mem
+
+	.rodata.start :
+	{
+		_rodata_lma = LOADADDR(.rodata.start);
+	} >mem AT>mem
+
+	.rodata :
+	{
+		*(.rdata)
+		*(.rodata .rodata.*)
+		*(.gnu.linkonce.r.*)
+
+		. = ALIGN(4);
+		_erodata = .;
+	} >mem AT>mem
+
+	.data.start :
+	{
+		_data_lma = LOADADDR(.data.start);
+	} >mem AT>mem
+
+	.data :
+	{
+		*(.data .data.*)
+		*(.gnu.linkonce.d.*)
+		. = ALIGN(8);
+		PROVIDE( __global_pointer$ = . + 0x800 );
+		*(.sdata .sdata.*)
+		*(.sdata2 .sdata2.*)
+		*(.gnu.linkonce.s.*)
+		. = ALIGN(8);
+		*(.srodata.cst16)
+		*(.srodata.cst8)
+		*(.srodata.cst4)
+		*(.srodata.cst2)
+		*(.srodata .srodata.*)
+
+		. = ALIGN(4);
+		_edata = .;
+	} >mem AT>mem
+
+	.bss.align :
+	{
+		. = ALIGN(4);
+		_bss = .;
+	} >mem AT>mem
+
+	.bss.start :
+	{
+		_bss_lma = LOADADDR(.bss.start);
+	} >mem AT>mem
+
+	.bss :
+	{
+		*(.sbss*)
+		*(.gnu.linkonce.sb.*)
+		*(.bss .bss.*)
+		*(.gnu.linkonce.b.*)
+		*(COMMON)
+
+		. = ALIGN(4);
+		_ebss = .;
+	} >mem AT>mem
+
+	. = ALIGN(8);
+	_end = .;
+	
+	.stack(NOLOAD) :
+	{
+		. = ALIGN(16);
+		. += __stack_size;
+		_stack_top = .;
+	} >mem AT>mem
+}
