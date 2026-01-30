@@ -4,7 +4,7 @@
 # RISCV core Cluster
 
 This repository hosts the hardware and software for a RISCV core cluster, developed as part of my master thesis project.
-It is based on the work of the PULP project, a joint effort between ETH Zurich and the University of Bologna.
+It is based on the work of the PULP project, supporting CVA6 r64gc and Sintch rv32g core setups.
 
 ![alt text](u55Cluster.drawio.png)
 
